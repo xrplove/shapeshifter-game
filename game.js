@@ -4,7 +4,16 @@ const touch={up:0,down:0,left:0,right:0,space:0};let spaceTap=false;
 document.querySelectorAll('[data-k]').forEach(b=>{const k=b.dataset.k;
  const on=e=>{e.preventDefault();Sound.start();if(k==='space'&&!touch.space)spaceTap=true;touch[k]=1};
  const off=e=>{e.preventDefault();touch[k]=0};
- b.addEventListener('pointerdown',on);b.addEventListener('pointerup',off);b.addEventListener('pointerleave',off);b.addEventListener('pointercancel',off);});
+ b.addEventListener('pointerdown',on);b.addEventListener('pointerup',off);b.addEventListener('pointerleave',off);b.addEventListener('pointercancel',off);
+ b.addEventListener('contextmenu',e=>e.preventDefault());
+ b.addEventListener('touchstart',e=>{e.preventDefault();on(e);},{passive:false});
+ b.addEventListener('touchend',off,{passive:false});
+ b.addEventListener('touchcancel',off);
+});
+document.body.addEventListener('contextmenu',e=>{if(e.target.closest&&e.target.closest('[data-k],#mute,#pad'))e.preventDefault();});
+const muteBtn=document.getElementById('mute');
+muteBtn.addEventListener('contextmenu',e=>e.preventDefault());
+muteBtn.addEventListener('touchstart',e=>e.preventDefault(),{passive:false});
 const buzz=p=>{try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}};
 
 // ---------- Sound: everything made in code with Web Audio ----------
@@ -91,8 +100,8 @@ class Level extends Phaser.Scene{constructor(){super('Level')}
  updHud(extra=''){this.hud.setText(this.base+(extra?'\n'+extra:''));}
  shine(){this.cameras.main.flash(250,255,240,180);buzz(40);}
  // Ant: crumbs & nest
- setup0(){this.nest=this.add.circle(80,H/2,34,0x5a3a1a).setStrokeStyle(4,0x3b2314);this.add.text(80,H/2+40,'nest',{color:'#fff'}).setOrigin(0.5);
-  this.items=[];for(let k=0;k<5;k++)this.items.push(this.add.circle(Phaser.Math.Between(250,760),Phaser.Math.Between(110,470),8,0xf5deb3));}
+ setup0(){this.nest=this.add.circle(80,H/2,50,0x5a3a1a).setStrokeStyle(5,0x3b2314);this.add.text(80,H/2+58,'nest',{color:'#fff',fontSize:'18px'}).setOrigin(0.5);
+  this.items=[];for(let k=0;k<5;k++)this.items.push(this.add.circle(Phaser.Math.Between(250,760),Phaser.Math.Between(110,470),14,0xf5deb3));}
  // Fly: walls
  setup1(){this.walls=[[220,60,30,380],[400,0,30,300],[400,380,30,120],[580,120,30,380]].map(r=>this.add.rectangle(r[0]+r[2]/2,r[1]+r[3]/2,r[2],r[3],0x5d4037).setStrokeStyle(2,0x3e2723));
   this.walls.forEach(w=>w.setDepth(3));this.goal=this.add.star(740,H/2,6,10,24,0xff69b4);this.add.circle(740,H/2,7,0xffeb3b);
@@ -124,7 +133,7 @@ class Level extends Phaser.Scene{constructor(){super('Level')}
  near(o,r=30){return Phaser.Math.Distance.Between(this.p.x,this.p.y,o.x,o.y)<r;}
  tick0(space){if(this.carry){this.carry.setPosition(this.p.x+14,this.p.y-10);}
   if(space){if(!this.carry){const c=this.items.find(c=>this.near(c));if(c){this.carry=c;Sound.sfx('pickup');buzz(20);}else Sound.sfx('bump');}
-   else{if(this.near(this.nest,45)){this.carry.destroy();this.items=this.items.filter(c=>c!==this.carry);this.carry=null;this.score++;Sound.sfx('drop');this.shine();this.updHud(`${this.score}/5 crumbs home`);if(this.score>=5)this.win();}
+   else{if(this.near(this.nest,65)){this.carry.destroy();this.items=this.items.filter(c=>c!==this.carry);this.carry=null;this.score++;Sound.sfx('drop');this.shine();this.updHud(`${this.score}/5 crumbs home`);if(this.score>=5)this.win();}
     else{this.carry=null;Sound.sfx('bump');}}}}
  tick1(space,ox,oy,t){if(space){this.flying=!this.flying;Sound.sfx(this.flying?'fly':'land');buzz(25);this.updHud(this.flying?'Flying! ✈':'Landed');}
   this.p.setScale(this.flying?1.4+Math.sin(t/80)*0.05:1);this.shadow.setPosition(this.p.x,this.p.y+(this.flying?26:12)).setScale(this.flying?0.6:1);
