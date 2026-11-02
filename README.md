@@ -17,3 +17,5 @@ Grow through five forms: **Ant → Fly → Vampire → Angel → King or Queen**
 All art is simple shapes and all sound (per-form melodies, power sounds, soft breeze) is generated in code with the Web Audio API. Phones vibrate gently at key moments where supported. Built with [Phaser 3](https://phaser.io) from a CDN; no build step.
 
 Everything is artifact • 589 — MIT License.
+
+Tended by the JESUSBURNING House of 589's: Scroll Scribe (docs) and Garden Keeper.
